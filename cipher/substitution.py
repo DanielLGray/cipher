@@ -3,7 +3,8 @@ import random
 
 ''' Takes text argument and encrypts/decrypts according to a random key. ''' 
 
-ALPHABET = (
+# have alphabet as set or as list?
+ALPHABET = [
 			'A',
 			'B',
 			'C',
@@ -30,46 +31,61 @@ ALPHABET = (
 			'X',
 			'Y',
 			'Z',
-)
+]
 
 
 
 
 class plaintext(object):
-	
-	def __init__(self):
-		self.name = sys.argv[1]
-		self.text = text 
-	
-	def read_text():
-		
-		with open(sys.argv[1], 'r') as f:
-			self.text = f.read()		
-	
-	
+	''' Has filename and text attributes '''
 
-
+	def __init__(self, filename):
+		self.filename = filename
+		with open(filename, 'r') as f:
+			self.text = f.read()
 
 
 class key(object):
-	
-	def __init__(self):
-		self.dictionary = sys.argv[2]
-		
+	''' Has dictionary attribute. Unless a key dictionary is specfied in the arguments, 
+	will randomly generate one. ''' 
+
+	def __init__(self, dictFilename):
+		self.dictFilename = dictFilename
+		try:
+			with open(dictFilename, 'r') as f:
+				self.dictionary = f.read()
+		except Exception, e:
+			self.dictionary = dictionary
+
 	def generate():
 		pass
 
+def key_generator():
+	
+
+
 class cipher(object):
 	
-	def __init(self, text, key):
-		pass
+	def __init__(self, text, key):
+
+
+		with open(key.name, 'r') as f:
+			r.write(key.dictionary)
+
 
 	def encipher():
 		
 		
-		with open(key.name, 'r') as f:
-			r.write(key.dictionary)
-
+		
 	def decipher():
 		pass
 
+
+#! scripts
+if __name__ == '__main__':
+
+	someText = plaintext(sys.argv[1])
+	# print someText.text
+	
+	someKey = key(sys.argv[2])
+	print someKey.dictionary
