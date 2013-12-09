@@ -1,7 +1,7 @@
 import sys
-import random
-
-''' Takes text argument and encrypts/decrypts according to a random key. ''' 
+from random import shuffle
+from os.path import basename
+''' Takes plaintext argument and encrypts/decrypts according to a random key. ''' 
 
 # have alphabet as set or as list?
 
@@ -58,27 +58,33 @@ class key(object):
 			'Y',
 			'Z',
 		]
-
-		cipherLETTERS = random.shuffle(ALPHABET)
+		# make a copy of the shuffled list
+		cipherLETTERS = list(ALPHABET)
+		# use random.shuffle
+		shuffle(cipherLETTERS)
 		self.dictionary = dict(zip(ALPHABET, cipherLETTERS))
-		
-		with open('randomkey.txt', 'a') as f:
-			r.write(key.dictionary)
-
-
 		return self.dictionary
 
 
 
 class cipher(object):
 	
-	def __init__(self, text, key):
-		pass
+	def __init__(self):
+		self.plaintext = plaintext
+		self.key = key
+		self.cipherTEXT = ''
 
-
-	def encipher():
-		pass		
-		
+	def encipher(self, plaintext, key):
+		plainTEXT = plaintext.text.upper()		
+		# write as generator next
+		for LETTER in plainTEXT:
+			try: 
+				cipherLETTER = key.dictionary[LETTER]
+			# figure out what type that these errors are
+			except Exception, e:
+				cipherLETTER = LETTER
+			self.cipherTEXT += cipherLETTER
+		return self.cipherTEXT
 		
 	def decipher():
 		pass
@@ -88,12 +94,26 @@ class cipher(object):
 if __name__ == '__main__':
 
 	someText = plaintext(sys.argv[1])
-	 
+	
 	someKey = key()
 	
-	try:
-		someKey.read_key(sys.argv[2])
-	except Exception, e:
-		someKey.generate_key()
+	# try:
+	# 	someKey.read_key(sys.argv[2])
+	# except Exception, e:
+	# 	someKey.generate_key()
 
-	print someKey.dictionary
+	someCipher = cipher()
+	a_key = someKey.generate_key()
+	print a_key
+	print someCipher.encipher(someText, someKey)
+
+	# write with option to remove whitespace
+
+	# with open('cipherTEXT of %s' %basename(plaintext.filname), 'a') as f:
+	# 	f.write(cipherTEXT)
+
+	# with open('generated_key' % plainTEXT.filename, 'a') as f:
+	# 		# Can only print strings, so change dictionary to string.
+	# 	f.write(str(self.dictionary))
+		
+		
