@@ -4,7 +4,33 @@ import random
 ''' Takes text argument and encrypts/decrypts according to a random key. ''' 
 
 # have alphabet as set or as list?
-ALPHABET = [
+
+
+
+class plaintext(object):
+	''' Has filename and text attributes '''
+
+	def __init__(self, filename):
+		self.filename = filename
+		with open(filename, 'r') as f:
+			self.text = f.read()
+
+class key(object):
+	''' Has dictionary attribute. Unless a key dictionary is specfied in the arguments, 
+	will randomly generate one. ''' 
+
+	def __init__(self, dictFilename=None):
+		self.dictFilename = dictFilename
+		
+	def read_key(self, dictFilename):
+		if dictFilename:
+			with open(dictFilename, 'r') as f:
+				self.dictionary = f.read()
+		return self.dictionary
+
+	def generate_key(self):
+
+		ALPHABET = [
 			'A',
 			'B',
 			'C',
@@ -31,50 +57,27 @@ ALPHABET = [
 			'X',
 			'Y',
 			'Z',
-]
+		]
+
+		cipherLETTERS = random.shuffle(ALPHABET)
+		self.dictionary = dict(zip(ALPHABET, cipherLETTERS))
+		
+		with open('randomkey.txt', 'a') as f:
+			r.write(key.dictionary)
 
 
+		return self.dictionary
 
-
-class plaintext(object):
-	''' Has filename and text attributes '''
-
-	def __init__(self, filename):
-		self.filename = filename
-		with open(filename, 'r') as f:
-			self.text = f.read()
-
-
-class key(object):
-	''' Has dictionary attribute. Unless a key dictionary is specfied in the arguments, 
-	will randomly generate one. ''' 
-
-	def __init__(self, dictFilename):
-		self.dictFilename = dictFilename
-		try:
-			with open(dictFilename, 'r') as f:
-				self.dictionary = f.read()
-		except Exception, e:
-			self.dictionary = dictionary
-
-	def generate():
-		pass
-
-def key_generator():
-	
 
 
 class cipher(object):
 	
 	def __init__(self, text, key):
-
-
-		with open(key.name, 'r') as f:
-			r.write(key.dictionary)
+		pass
 
 
 	def encipher():
-		
+		pass		
 		
 		
 	def decipher():
@@ -85,7 +88,12 @@ class cipher(object):
 if __name__ == '__main__':
 
 	someText = plaintext(sys.argv[1])
-	# print someText.text
+	 
+	someKey = key()
 	
-	someKey = key(sys.argv[2])
+	try:
+		someKey.read_key(sys.argv[2])
+	except Exception, e:
+		someKey.generate_key()
+
 	print someKey.dictionary
