@@ -1,4 +1,4 @@
-
+import re
 
 class ciphertext(object):
 	
@@ -42,14 +42,22 @@ class frequency(object):
 			'Y',
 			'Z',
 		]
+		
+	def frequency(self, text):
 		# Alphabetical list of (letter, frequency) tuples in text.
 		self.frequency = [(LETTER, text.count(LETTER)) for LETTER in self.ALPHABET] 
+		return self.frequency
+
+	def relative_frequency(self):
+		@frequency()
 		# Tuples of (letter, frequency) sorted by most common to least common letter.
 		self.relativefrequency = sorted(self.frequency, key=lambda x: x[1], reverse=True)
+		return self.relativefrequency
 
-
+	def repeats(self):
  		nonzerofrequency = [x for x in self.relativefrequency if x[1] != 0]
 
+ 		
 
 class transpositions(frequency):
 	pass 
@@ -64,4 +72,6 @@ if __name__ == "__main__":
 	# print a_count.frequency, "\n", a_count.relativefrequency
 
 	print a_count.relativefrequency	
+
+
 

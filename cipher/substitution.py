@@ -1,10 +1,8 @@
-import sys
+import sys, re
 from random import shuffle
 from os.path import basename
-''' Takes plaintext argument and encrypts/decrypts according to a random key. ''' 
-
-# have alphabet as set or as list?
-
+from itertools import groupby
+''' Takes plaintext arguments and encrypts/decrypts according to a random key. ''' 
 
 
 class plaintext(object):
@@ -16,8 +14,8 @@ class plaintext(object):
 			self.text = f.read()
 
 class key(object):
-	''' Has dictionary attribute. Unless a key dictionary is specfied in the arguments, 
-	will randomly generate one. ''' 
+	''' Has dictionary attribute. Key can be instantiated using a file containing a key dictionary, 
+	or the class can randomly generate one with the 'generate_key' method. ''' 
 
 	def __init__(self, dictFilename=None):
 		self.dictFilename = dictFilename
@@ -51,32 +49,40 @@ class key(object):
 		]
 
 	def read_key(self, dictFilename):
+		"""
+		Reads a key from file. Requires a filename argument.
+		"""
 		if dictFilename:
 			with open(dictFilename, 'r') as f:
 				self.dictionary = f.read()
-		return self.dictionary
+			return self.dictionary
+		else:
+			return IOError("Specify a Filename")
 
 	def generate_key(self):
-
-		
-		# make a copy of the shuffled list
+		"""
+		Make a copy of the uppercase alphabet, shuffle the copy, and zip it with the original alphabet.
+		"""
 		cipherLETTERS = list(self.ALPHABET)
-		# use random.shuffle
 		shuffle(cipherLETTERS)
 		self.dictionary = dict(zip(self.ALPHABET, cipherLETTERS))
 		return self.dictionary
 
 class cipher(object):
-	
+	"""
+	Has plaintext, key, ciphertext, and problemLetters attributes. The first_pass method returns a 
+	ciphertext with the problem letters it was unable to encipher, and the second_pass method calls 
+	attempts to deal with them by expanding the key dictionary.
+	"""
 	def __init__(self):
 		self.plaintext = plaintext
 		self.key = key
 		self.cipherTEXT = ''
 		self.problemLetters = []
 
-	def ciphertext(self, plaintext, key):
+	def firstpass(self, plaintext, key):
 		plainTEXT = plaintext.text.upper()		
-		# write as generator next
+		# rewrite as generator next
 		for LETTER in plainTEXT:
 			try: 
 				cipherLETTER = key.dictionary[LETTER]
@@ -87,19 +93,36 @@ class cipher(object):
 			self.cipherTEXT += cipherLETTER
 		return self.cipherTEXT, self.problemLetters
 
-	def encipher(self, plaintext, key):
-		self.ciphertext(self, plaintext, key)
-# write with option to remove whitespace
+	def secondpass(self, cipherTEXT, problemLetters):
+		"""
+		Erases whitespaces.
+		"""
+		
+		letters = [x[0] for x in list(groupby(problemLetters))]
+		spaces = ['\t','\n', ' ']
+		#erase whitespace
+		for x in (set(letters) & set(spaces)):
+			self. cipherTEXT = re.sub(x, '', self.cipherTEXT)
 
+		return self.cipherTEXT 
+	
+	def encipher(self, plaintext, key):
+		 
+		ciphertext, problems = self.firstpass(plaintext, key)
+		second = self.secondpass(ciphertext, problems)
+		return second
+
+	def output(self):
+		pass
 	# with open('cipherTEXT of %s' %basename(plaintext.filname), 'a') as f:
 	# 	f.write(cipherTEXT)
 
 	# with open('generated_key' % plainTEXT.filename, 'a') as f:
 	# 		# Can only print strings, so change dictionary to string.
 	# 	f.write(str(self.dictionary))
-		
+	
 
-		
+
 	def decipher():
 		pass
 
@@ -107,18 +130,17 @@ class cipher(object):
 #! scripts
 if __name__ == '__main__':
 
-	someText = plaintext(sys.argv[1])
-	
+	someText = plaintext('nathan.txt')
 	someKey = key()
 	
 	# try:
 	# 	someKey.read_key(sys.argv[2])
 	# except Exception, e:
 	# 	someKey.generate_key()
-
 	someCipher = cipher()
 	a_key = someKey.generate_key()
-	print a_key
-	print someCipher.ciphertext(someText, someKey)
-
+	# print a_key
+	# print someCipher.firstpass(someText, someKey)
+	# print someCipher.secondpass()
+	print someCipher.encipher(someText, someKey)
 			
