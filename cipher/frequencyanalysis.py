@@ -1,6 +1,6 @@
 import re
 from itertools import groupby
-from collections import Counter
+from collections import Counter, OrderedDict
 
 class ciphertext(object):
 	
@@ -24,17 +24,13 @@ class analysis(object):
 	# def snippets(self):
 		# Calling set on the list returned by findall removes all the repeated letters.
 
-		two_letters = [sorted(set(re.findall(r'(\w{0})'.format(pair[0]), text))) for pair in self.relative_frequency]
+		two_letters = reduce(lambda x, y: x + y, ((re.findall(r'(\w{0})'.format(pair[0]), text)) for pair in self.relative_frequency))
 		# eventually use dotall to read over lines
-		# two_letters_counter = Counter(two_letters)
-		# for k, v in groupby(two_letters, key=lambda x: x)
+		
+		two_letters_dictionary = dict(Counter(two_letters))
+		two_letters_greater_than_one = dict((k, v) for k, v in two_letters_dictionary.items() if v > 1)
 
-		# Idea : for key, each_list in groupby(two_letters, key=lambda x: x[0]):
-		#			for each_pair in each_list:
-		# 				something...
-
-		# return two_letters_counter
-		return two_letters
+		return two_letters_greater_than_one
 		
 
 class transpositions(object):
