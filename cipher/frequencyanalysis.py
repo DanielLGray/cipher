@@ -1,6 +1,7 @@
 import re
 from itertools import groupby
-from collections import Counter, OrderedDict
+from collections import Counter
+
 
 class ciphertext(object):
 	
@@ -26,8 +27,6 @@ class analysis(object):
 		# outputs letter frequencies alphabetically (a-z) like {'a': 12, 'b': 5... }
 		self.frequency = sorted(self.relative_frequency)
 
-		
-
 		# eventually use dotall to read over \n
 
 		# in a text of "aaaaabbbbaaaaa"
@@ -42,25 +41,23 @@ class analysis(object):
 		
 		# filter the dictionary to return pairs that are unique, i.e. greater than one.
 		# like {'bb': 2, ...}
-		two_letters_greater_than_one = {k:v for k, v in two_letters_dictionary.items() if v > 1}
+		letters_dict = {k:v for k, v in two_letters_dictionary.items() if v > 1}
 
 
-		three_letters = reduce(lambda x, y: x + y, ((re.findall(r'(\w{0})'.format(k), text)) for k, v in two_letters_greater_than_one.items()))
-		three_letters_dictionary = Counter(three_letters)
-		three_letters_greater_than_one = {k:v for k, v in three_letters_dictionary.items() if v > 1}
 
-		snippets_dict = {}
-		# while :
-		# 	# takes an input dictionary
-		# 	snippets = reduce(lambda x, y: x + y, ((re.findall(r'(\w{0})'.format(k), text)) for k,v in input_dictionary.items()))
-		# 	snippets_frequency = Counter(snippets)
-		# 	nonunique_snippets = {k:v for k, v in snippets.items() if v > 1}
-		# 	if nonunique_snippets != {}:
-		# 		snippets_dict.update(nonunique_snippets)	
-		# 	return nonunique_snippets
+		snippets_list = []
+		# dangerous! rewrite as generator
+		while True:
+			snippets = reduce(lambda x, y: x + y, ((re.findall(r'(\w{0})'.format(k), text)) for k,v in letters_dict.items()))
+			snippets_frequency = Counter(snippets)
+			nonunique_snippets = {k:v for k, v in snippets_frequency.items() if v > 1}
+			if not nonunique_snippets:
+				break 
+			snippets_list.append(nonunique_snippets)
+			letters_dict = nonunique_snippets
+			
+		return snippets_list
 		
-		# return snippets_dict	
-		return two_letters_greater_than_one, three_letters_greater_than_one
 
 class transpositions(object):
 	pass 
@@ -68,7 +65,7 @@ class transpositions(object):
 
 if __name__ == "__main__":
 
-	text = 'AAAAAAAASDFAWEFADGSRTGREARAGRDGSFGSFDXBCVBDFGFHGJFGHJYUITYUIRYRYUIRTHJKDFGNBNMXCBSDFHJSDFHSSDFBBNMSDFHJSDFTT'
+	text = 'AAAAAASDFAWEFASDFADGSRTGREASDFARAGRDASDGSFGSFREWDXBCVBDREWQFGFHREWGJFGHREWQSFHSSDFBBNMSDFHSDFTT'
 
 	a_count = analysis(text)
 
