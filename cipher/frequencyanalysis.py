@@ -11,6 +11,7 @@ class ciphertext(object):
 
 class analysis(object):
 
+
 	def __init__(self, text):
 		self.text = text
 		
@@ -29,7 +30,8 @@ class analysis(object):
 	
 		snippets_list = []
 
-		# dangerous! rewrite as generator
+# dangerous! rewrite as generator
+# use permutations to search though document? Faster?
 		while True:
 		# eventually use dotall to read over \n
 
@@ -38,12 +40,11 @@ class analysis(object):
 		# each letter and every letter before it, making a list of lists. [['aa', 'ba'], ['ab', 'bb'], ...]
 		# then, reduce the list of lists into a single list. ['aa', 'bb', 'ab', 'bb', ...]
 			snippets = reduce(lambda x, y: x + y, ((re.findall(r'(\w{0})'.format(k), text)) for k,v in letters_dict.items()))
-		
+			
 		# for the long list of all two letter pairs, return a Counter object dictionary
 		# in the order of largest to smallest. {'aa': 1, 'bb': 2, ...}
 			snippets_frequency = Counter(snippets)
-
-		
+			
 		# filter the dictionary to return pairs that are unique, i.e. greater than one.
 		# like {'bb': 2, ...}
 			nonunique_snippets = {k:v for k, v in snippets_frequency.items() if v > 1}
@@ -57,19 +58,24 @@ class analysis(object):
 		return snippets_list
 		
 
-class transpositions(object):
-	pass 
-
-
 if __name__ == "__main__":
 
-	text = 'AAAAAASDFAWEFASDFADGSRTGREASDFARAGRDASDGSFGSFREWDXBCVBDREWQFGFHREWGJFGHREWQSFHSSDFBBNMSDFHSDFTT'
+# need to handle []
+
+	# with open('hamlet.txt', 'r') as f:
+	# 	text = f.read()
+	# 	a_count = analysis(text)
+	# 	print(a_count.frequency())
+
+
+
+	text = "aabaaab"
+# [{'aa': 2, 'ab': 3, 'ba': 2}, {'aba': 2, 'aab': 2}, {'aaba': 2}]
+# PROBLEM: 'aa' should be 3 !! Maybe not use findall?
 
 	a_count = analysis(text)
-
-
 	print(a_count.frequency())
 
-	# print(a_count.snippets())
+
 
 
