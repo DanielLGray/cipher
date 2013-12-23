@@ -1,6 +1,7 @@
 import re
-from itertools import groupby
 from collections import Counter
+import ignore_characters
+
 
 
 class ciphertext(object):
@@ -9,13 +10,14 @@ class ciphertext(object):
 		self.text = text
 		# text = sys.argv[1]
 
-class analysis(object):
+class Frequency(object):
 
 
-	def __init__(self, text):
+	def __init__(self, text, length=3):
 		self.text = text
+		self.length = length
 		
-	def frequency(self):
+	def no_overlaps(self):
 		# Alphabetical list of (letter, frequency) tuples in text.
 		# eventually use super to inherit from class Counter()
 		
@@ -58,9 +60,54 @@ class analysis(object):
 		return snippets_list
 		
 
-if __name__ == "__main__":
+	def overlaps(self, length=3):
+		"""
+		This module uses a boxcar method to find repeated patters, (>1 instance) in a text.
+		Edit the ignore_characters.py configuration file, with lists "automatic" and "user_added"
+		to add or subtract characters from the analysis (' ', '\ n' and '\ t' ignored by default).
+		
+		Frequency class: specify filename if run as a stand-alone, or pass text to class instance on import.
+		
+		Example function calls:
 
-# need to handle []
+			text = "take me to your leader"
+			text_analysis = Frequency(text)
+ 			print text_analysis.overlaps()
+			
+		Use self.length to set the minimum pattern length. The default pattern length is 3, like [('abc',2), ('bca')....] in 'abcabcabc'. 		
+		Use re.findall if you are looking for non-overlapping patterns.
+		"""
+		
+		ignored_text = ignore_characters.automatic + ignore_characters.user_added
+		ignore_this_letter = False
+		self.combinations = Counter()
+		last_boxcar = len(text) - length + 1
+		for start_letter in range(0, last_boxcar):		
+			if text[start_letter] in ignored_text:
+				break
+			for expansion in range(0, (len(text)-length-start_letter)+1):
+				end_letter = start_letter + length + expansion
+				text_slice = text[start_letter:end_letter]
+				for letter in text_slice:
+					if letter in ignored_text:
+						ignore_this_letter = True
+						break
+				if ignore_this_letter:
+					break
+				left_slice = text[:(start_letter+len(text_slice)-1)]
+				right_slice = text[(start_letter+1):]
+				if text_slice in left_slice or text_slice in right_slice:
+					text_slice_list = [text_slice]
+					self.combinations.update(text_slice_list)
+		return self.combinations
+
+
+
+
+# also, mark distances between non-overlapping repeats
+# extend counter class to contain information about location... or build your own.
+
+if __name__ == "__main__":
 
 	# with open('hamlet.txt', 'r') as f:
 	# 	text = f.read()
@@ -68,14 +115,9 @@ if __name__ == "__main__":
 	# 	print(a_count.frequency())
 
 
-
-	text = "aabaaab"
-# [{'aa': 2, 'ab': 3, 'ba': 2}, {'aba': 2, 'aab': 2}, {'aaba': 2}]
-# PROBLEM: 'aa' should be 3 !! Maybe not use findall?
-
-	a_count = analysis(text)
-	print(a_count.frequency())
-
-
-
+	text = "abcabc"
+	text_analysis = Frequency(text)
+ 	print "text is:", text
+ 	print text_analysis.no_overlaps()
+ 	print text_analysis.overlaps()
 
