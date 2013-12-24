@@ -1,6 +1,7 @@
 import re
-from collections import Counter
 import pprint
+from collections import Counter
+from itertools import groupby
 import ignore_characters
 
 
@@ -132,17 +133,30 @@ class Frequency(object):
 						slice_location[text_slice] = []
 						slice_location[text_slice].append(start_letter)
 
-		self.slice_location_and_frequency = {}
+		self.slice_location_and_frequency = []
 		
 		for text_slice, location in slice_location.items():
-			self.slice_location_and_frequency.update({ 
-														text_slice: {
+			self.slice_location_and_frequency.append(
+														{
+																	'slice': text_slice,
 																	'location': location,
 																	'frequency': len(location),
 																	},
-														}) 	
-									
-		return self.slice_location_and_frequency
+														) 	
+		
+		# sort slices by most commont to least common, based on frequency. 
+		self.slice_location_and_frequency = sorted(self.slice_location_and_frequency, key=lambda x: x['frequency'], reverse=True)
+
+		self.slices_by_frequency = (
+											dict(
+												(k,list(v))
+													for k, v in groupby(self.slice_location_and_frequency, 
+																		key=lambda x: x['frequency']
+																		)
+											)
+										)
+
+		return self.slice_location_and_frequency, self.slices_by_frequency
 
 
 
@@ -167,10 +181,13 @@ if __name__ == "__main__":
 	# 	a_count = Frequency(text)
 	# 	print(a_count.overlaps())
 
-	text = 'CCC TGT GGA GCC ACA CCC TAG GGG GGG CCC'
+	text = 'CCC TGT GGA AAA GCC TTT ACA TTT CCC AAA TAG GGG GGG CCC'
 	text_analysis = Frequency(text)
  	print("text is:", text)
  	print(text_analysis.no_overlaps())
+ 	text_analysis.overlaps()
  	print("\n-------------\n")
- 	pprint.pprint(text_analysis.overlaps())
+ 	pprint.pprint(text_analysis.slices_by_frequency)
+	print("\n-------------\n")
+ 	pprint.pprint(text_analysis.slice_location_and_frequency)
 	print("\n-------------\n")
